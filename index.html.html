@@ -55,12 +55,13 @@ const SEED_DATA = {
     "loj_3": { nomeLoja: "Hub Baixada", cidade: "Santos", endereco: "Av. Portuária, 88", observacoes: "Recebimento 24h", criadoEm: 1700200000000 }
   },
   rotas: {
-    "rot_1": { nomeRota: "Rota Expressa RMC", idLojas: "loj_1, loj_2", idMotorista: "mot_1", diasSemana: "Segunda, Quarta, Sexta", criadoEm: 1700000000000 },
-    "rot_2": { nomeRota: "Rota Litoral Sul", idLojas: "loj_1, loj_3", idMotorista: "mot_2", diasSemana: "Terça, Quinta", criadoEm: 1700100000000 }
+    "rot_1": { nomeRota: "Rota Expressa RMC", idLojas: "loj_1, loj_2", kmEstimado: 190, linkMaps: "https://www.google.com/maps/dir/Av.%20Industrial%2C%201000%2C%20S%C3%A3o%20Paulo/Rua%20das%20Flores%2C%20450%2C%20Campinas", idMotorista: "mot_1", diasSemana: "Segunda, Quarta, Sexta", criadoEm: 1700000000000 },
+    "rot_2": { nomeRota: "Rota Litoral Sul", idLojas: "loj_1, loj_3", kmEstimado: 160, linkMaps: "", idMotorista: "mot_2", diasSemana: "Terça, Quinta", criadoEm: 1700100000000 }
   },
   abastecimentos: {
-    "abs_1": { data: "2026-11-01", idVeiculo: "vei_1", idMotorista: "mot_1", combustivel: "Diesel", litros: 350, valor: 2065.00, cotacao: 5.90, criadoEm: 1700000000000 },
-    "abs_2": { data: "2026-11-05", idVeiculo: "vei_2", idMotorista: "mot_2", combustivel: "Diesel", litros: 280, valor: 1652.00, cotacao: 5.90, criadoEm: 1700100000000 }
+    "abs_1": { data: "2026-11-01", idVeiculo: "vei_1", idMotorista: "mot_1", odometro: 143800, combustivel: "Diesel", litros: 350, valor: 2065.00, cotacao: 5.90, criadoEm: 1700000000000 },
+    "abs_2": { data: "2026-11-05", idVeiculo: "vei_2", idMotorista: "mot_2", odometro: 98000, combustivel: "Diesel", litros: 280, valor: 1652.00, cotacao: 5.90, criadoEm: 1700100000000 },
+    "abs_3": { data: "2026-11-08", idVeiculo: "vei_1", idMotorista: "mot_1", odometro: 144950, combustivel: "Diesel", litros: 220, valor: 1298.00, cotacao: 5.90, criadoEm: 1700200000000 }
   },
   manutencoes: {
     "man_1": { data: "2026-11-08", empresa: "Mecânica Diesel Tech", idVeiculo: "vei_3", numeroNota: "NF-8842", fotoNota: "", valor: 4500.00, servico: "Troca do sistema de freios e revisão do turbo", statusManutencao: "Aberta", criadoEm: 1700000000000 }
@@ -154,14 +155,14 @@ const E = {
   motoristas: { t: 'Motoristas', n: 'Novo motorista', f: [['nomeCompleto', 'Nome completo'], ['email', 'E-mail', 'email'], ['telefone', 'Telefone'], ['cnh', 'CNH'], ['validadeCnh', 'Validade da CNH', 'date'], ['status', 'Status', 'sel', ['Ativo', 'Inativo']]], c: ['nomeCompleto', 'email', 'telefone', 'cnh', 'validadeCnh', 'status'] },
   veiculos: { t: 'Veículos', n: 'Novo veículo', u: ['placa', 'renavam', 'chassi'], f: [['nomeVeiculo', 'Nome do veículo'], ['codigo', 'Código'], ['placa', 'Placa'], ['mesAno', 'Mês/Ano', 'month'], ['renavam', 'Renavam'], ['chassi', 'Chassi'], ['proprietario', 'Proprietário']], c: ['nomeVeiculo', 'codigo', 'placa', 'mesAno', 'renavam', 'chassi', 'proprietario', 'status'] },
   lojas: { t: 'Lojas', n: 'Nova loja', f: [['nomeLoja', 'Nome da loja'], ['endereco', 'Endereço'], ['cidade', 'Cidade'], ['observacoes', 'Observações', 'textarea']], c: ['nomeLoja', 'cidade', 'endereco', 'observacoes'] },
-  rotas: { t: 'Rotas', n: 'Nova rota', f: [['nomeRota', 'Nome da rota'], ['idLojas', 'Lojas vinculadas', 'chk_lojas'], ['idMotorista', 'Motorista responsável', 'ref:motoristas'], ['diasSemana', 'Dias da semana', 'chk_dias']], c: ['nomeRota', 'idLojas', 'idMotorista', 'diasSemana'] },
-  abastecimentos: { t: 'Abastecimentos', n: 'Novo abastecimento', f: [['data', 'Data', 'date'], ['idVeiculo', 'Carro (Veículo)', 'ref:veiculos'], ['idMotorista', 'Motorista', 'ref:motoristas'], ['combustivel', 'Combustível', 'sel', COMBUSTIVEIS], ['litros', 'Litros', 'number'], ['valor', 'Valor Total (R$)', 'number']], c: ['data', 'idVeiculo', 'idMotorista', 'combustivel', 'litros', 'valor', 'cotacao'] },
+  rotas: { t: 'Rotas', n: 'Nova rota', f: [['nomeRota', 'Nome da rota'], ['idLojas', 'Lojas vinculadas', 'chk_lojas'], ['kmEstimado', 'KM estimado total', 'number', '', 1], ['linkMaps', 'Link da rota no Google Maps', 'url', '', 1], ['idMotorista', 'Motorista responsável', 'ref:motoristas'], ['diasSemana', 'Dias da semana', 'chk_dias']], c: ['nomeRota', 'idLojas', 'kmEstimado', 'linkMaps', 'idMotorista', 'diasSemana'] },
+  abastecimentos: { t: 'Abastecimentos', n: 'Novo abastecimento', f: [['data', 'Data', 'date'], ['idVeiculo', 'Carro (Veículo)', 'ref:veiculos'], ['idMotorista', 'Motorista', 'ref:motoristas'], ['odometro', 'Odômetro (km)', 'number'], ['combustivel', 'Combustível', 'sel', COMBUSTIVEIS], ['litros', 'Litros', 'number'], ['valor', 'Valor Total (R$)', 'number']], c: ['data', 'idVeiculo', 'idMotorista', 'odometro', 'combustivel', 'litros', 'valor', 'cotacao'] },
   manutencoes: { t: 'Manutenção', n: 'Nova manutenção', f: [['data', 'Data', 'date'], ['empresa', 'Empresa'], ['idVeiculo', 'Veículo', 'ref:veiculos'], ['numeroNota', 'Nº Nota Fiscal'], ['fotoNota', 'Anexo da Nota (Foto)', 'file'], ['valor', 'Valor (R$)', 'number'], ['servico', 'Serviço', 'textarea'], ['statusManutencao', 'Situação', 'sel', ['Aberta', 'Finalizada']], ['dataFim', 'Data de fim', 'date', '', 1]], c: ['data', 'idVeiculo', 'empresa', 'numeroNota', 'fotoNota', 'servico', 'valor', 'statusManutencao'] },
   inspecoes: { t: 'Inspeções', n: 'Nova inspeção', f: [['idVeiculo', 'Veículo', 'ref:veiculos'], ['dataHora', 'Data e hora', 'datetime-local'], ['odometro', 'Odômetro (km)', 'number'], ['alertasPainel', 'Alertas do painel', 'textarea'], ['notas', 'Notas', 'textarea'], ...IN.map(k => [k, hum(k), 'sel', OA])], c: ['dataHora', 'idVeiculo', 'odometro', 'checklist', 'qtdAtencao', 'qtdCritico'] },
   expedicoes: { t: 'Expedições', n: 'Nova expedição', f: [['idMotorista', 'Motorista', 'ref:motoristas'], ['idRota', 'Rota', 'ref:rotas'], ['idVeiculo', 'Veículo', 'ref:veiculos'], ['kmSaida', 'KM de saída', 'number'], ['observacoesSaida', 'Observações da saída', 'textarea'], ['kmChegada', 'KM de chegada', 'number'], ['observacoesRetorno', 'Observações do retorno', 'textarea'], ['statusExpedicao', 'Status', 'sel', ['Em rota', 'Finalizada']]], c: ['id', 'dataHoraSaida', 'idMotorista', 'idVeiculo', 'idRota', 'kmSaida', 'kmChegada', 'kmRodado', 'statusExpedicao'] }
 };
 
-const LB = { status: 'Status', qtdAtencao: 'Atenção', qtdCritico: 'Crítico', kmRodado: 'KM rodado', dataHoraSaida: 'Data', statusExpedicao: 'Status', id: 'ID', statusManutencao: 'Situação', diasSemana: 'Dias da semana', idLojas: 'Lojas', idMotorista: 'Motorista', idVeiculo: 'Carro', numeroNota: 'Nº NF', fotoNota: 'Nota Fiscal', checklist: 'Checklist de Itens', cotacao: 'Cotação (R$/L)' };
+const LB = { status: 'Status', qtdAtencao: 'Atenção', qtdCritico: 'Crítico', kmRodado: 'KM rodado', kmEstimado: 'KM estimado', linkMaps: 'Google Maps', odometro: 'Odômetro', dataHoraSaida: 'Data', statusExpedicao: 'Status', id: 'ID', statusManutencao: 'Situação', diasSemana: 'Dias da semana', idLojas: 'Percurso (lojas)', idMotorista: 'Motorista', idVeiculo: 'Carro', numeroNota: 'Nº NF', fotoNota: 'Nota Fiscal', checklist: 'Checklist de Itens', cotacao: 'Cotação (R$/L)' };
 const MENU = [['Dashboard', , 'grid'], ['Motoristas', 'motoristas', 'user'], ['Veículos', 'veiculos', 'truck'], ['Lojas', 'lojas', 'store'], ['Rotas', 'rotas', 'route'], ['Abastecimentos', 'abastecimentos', 'fuel'], ['Inspeções', 'inspecoes', 'clip'], ['Manutenção', 'manutencoes', 'wrench'], ['Expedições', 'expedicoes', 'pkg']];
 
 const LAB = { motoristas: r => r.nomeCompleto, veiculos: r => `${r.nomeVeiculo} (${r.placa})`, lojas: r => r.nomeLoja, rotas: r => r.nomeRota };
@@ -169,6 +170,14 @@ const nm = (c, id) => D[c]?.[id] ? LAB[c](D[c][id]) : '—';
 const fl = (col, k) => E[col].f.find(f => f[0] === k) || [];
 const agora = () => new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 16);
 const dt = d => d ? d.split('-').reverse().join('/') : '—';
+const norm = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const n2 = (x, d = 2) => Number(x || 0).toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const porNome = (a, b) => String(a[1].nomeLoja || '').localeCompare(String(b[1].nomeLoja || ''), 'pt-BR', { sensitivity: 'base' });
+const temOdo = a => a.odometro !== undefined && a.odometro !== '' && a.odometro !== null;
+
+/* PERCURSO DA ROTA (ordem das lojas vinculadas) */
+let PERC = [];
+const percHtml = () => PERC.length ? PERC.map((id, n) => `<li class="flex items-center gap-2 text-xs bg-white border border-gray-200 rounded-lg px-2 py-1.5"><span class="w-5 h-5 shrink-0 rounded-full bg-brand text-white flex items-center justify-center font-semibold">${n + 1}</span><span class="flex-1">${esc(D.lojas[id]?.nomeLoja || '')} <span class="text-gray-400">(${esc(D.lojas[id]?.cidade || '')})</span></span><button type="button" title="Subir" data-a="pmov" data-i="${n}" data-c="-1" ${n === 0 ? 'disabled' : ''} class="px-1.5 py-0.5 rounded hover:bg-gray-100 disabled:opacity-30">▲</button><button type="button" title="Descer" data-a="pmov" data-i="${n}" data-c="1" ${n === PERC.length - 1 ? 'disabled' : ''} class="px-1.5 py-0.5 rounded hover:bg-gray-100 disabled:opacity-30">▼</button></li>`).join('') : '<li class="text-xs text-gray-400 italic">Marque as lojas acima para montar o percurso.</li>';
 
 /* REGRAS DE NEGÓCIO E PERSISTÊNCIA */
 const recalc = id => {
@@ -190,6 +199,9 @@ const salvar = (col, id, v) => {
   if (col === 'abastecimentos') {
     const l = Number(v.litros || 0), val = Number(v.valor || 0);
     v.cotacao = l > 0 ? Number((val / l).toFixed(2)) : 0;
+    const odo = Number(v.odometro);
+    const cf = Object.entries(D.abastecimentos || {}).find(([i, a]) => i !== id && a.idVeiculo === v.idVeiculo && temOdo(a) && ((a.data < v.data && Number(a.odometro) > odo) || (a.data > v.data && Number(a.odometro) < odo)));
+    if (cf) throw new Error(`Odômetro inconsistente com o abastecimento de ${dt(cf[1].data)} (${Number(cf[1].odometro).toLocaleString('pt-BR')} km).`);
   }
   if (col === 'expedicoes' && v.kmChegada !== undefined) {
     if (v.kmChegada < v.kmSaida) throw new Error('Quilometragem inválida.');
@@ -240,30 +252,38 @@ const inp = ([k, l, t = 'text', o], v, ctx) => {
     return `<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 border border-gray-300 rounded-xl p-3 bg-white">${DIAS.map(d => `<label class="inline-flex items-center gap-1.5 text-xs text-gray-700 cursor-pointer"><input type="checkbox" name="${k}" value="${d}" ${sel.includes(d) ? 'checked' : ''} class="rounded border-gray-300 text-brand focus:ring-brand"> ${d}</label>`).join('')}</div>`;
   }
   if (t === 'chk_lojas') {
-    const sel = Array.isArray(v) ? v : (v ? String(v).split(', ') : []);
-    const lojasList = Object.entries(D.lojas || {});
+    const lojasList = Object.entries(D.lojas || {}).sort(porNome);
     if (!lojasList.length) return `<div class="text-xs text-gray-500 italic">Cadastre lojas primeiro.</div>`;
-    return `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-gray-300 rounded-xl p-3 bg-white max-h-40 overflow-y-auto">${lojasList.map(([id, r]) => `<label class="inline-flex items-center gap-1.5 text-xs text-gray-700 cursor-pointer"><input type="checkbox" name="${k}" value="${id}" ${sel.includes(id) ? 'checked' : ''} class="rounded border-gray-300 text-brand focus:ring-brand"> ${esc(r.nomeLoja)} (${esc(r.cidade)})</label>`).join('')}</div>`;
+    PERC = (Array.isArray(v) ? v : (v ? String(v).split(', ') : [])).filter(id => D.lojas[id]);
+    return `<input id="lq" type="search" placeholder="Pesquisar loja por nome ou cidade..." class="${IC} mb-2" autocomplete="off">
+<div id="lojasBox" class="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-gray-300 rounded-xl p-3 bg-white max-h-40 overflow-y-auto">${lojasList.map(([id, r]) => `<label data-n="${esc(norm(r.nomeLoja + ' ' + r.cidade))}" class="inline-flex items-center gap-1.5 text-xs text-gray-700 cursor-pointer"><input type="checkbox" name="${k}" value="${id}" data-perc ${PERC.includes(id) ? 'checked' : ''} class="rounded border-gray-300 text-brand focus:ring-brand"> ${esc(r.nomeLoja)} (${esc(r.cidade)})</label>`).join('')}<div id="lojasVazio" class="hidden text-xs text-gray-400 italic">Nenhuma loja encontrada.</div></div>
+<div class="mt-3"><div class="flex flex-wrap justify-between items-center gap-2 mb-1"><span class="text-gray-600">Percurso (ordem de visita)</span><button type="button" class="text-xs text-brand font-medium underline" data-a="gmaps">Gerar link do Maps pelo percurso</button></div><ol id="perc" class="space-y-1 bg-gray-50 border border-gray-200 rounded-xl p-2">${percHtml()}</ol></div>`;
   }
   if (t === 'file') return `<input name="${k}_file" id="${k}_file" type="file" accept="image/*" class="${IC}"><input type="hidden" name="${k}" value="${esc(v)}">${v ? `<div class="mt-1 text-xs text-green-700 font-medium">✓ Imagem já anexada</div>` : ''}`;
   if (t.startsWith('ref:')) {
     const cn = t.slice(4);
     return `<select name="${k}" class="${IC}"><option value=""></option>${Object.entries(D[cn] || {}).filter(([i, r]) => !(ctx.disp && cn === 'veiculos' && r.status !== 'Disponível') && (ctx.todos || !(cn === 'motoristas' && r.status === 'Inativo' && i !== v))).map(([i, r]) => `<option value="${i}" ${i === v ? 'selected' : ''}>${esc(LAB[cn](r))}</option>`).join('')}</select>`;
   }
+  if (t === 'url') return `<input name="${k}" type="url" placeholder="https://maps.app.goo.gl/..." value="${esc(v)}" class="${IC}">`;
   if (t === 'textarea') return `<textarea name="${k}" rows="2" class="${IC}">${esc(v)}</textarea>`;
   return `<input name="${k}" type="${t}" ${t === 'number' ? 'step="any"' : ''} value="${esc(v ?? (t === 'datetime-local' ? agora() : ''))}" class="${IC}">`;
 };
 
 const form = (col, id, keys, title, onSave, ctx = {}) => {
   const rec = id ? D[col][id] : {}, fs = keys.map(k => fl(col, k));
-  modal(`<h3 class="text-lg font-semibold mb-4">${title}</h3><form id="fm" class="grid sm:grid-cols-2 gap-3">${fs.map(f => `<label class="text-sm ${['textarea', 'chk_dias', 'chk_lojas'].includes(f[2]) ? 'sm:col-span-2' : ''}"><span class="block mb-1 text-gray-600">${f[1]}</span>${inp(f, rec[f[0]], ctx)}</label>`).join('')}<div class="sm:col-span-2 flex justify-end gap-2 pt-2"><button type="button" class="${G}" data-a="x">Cancelar</button><button class="${B}">Salvar</button></div></form>`);
+  modal(`<h3 class="text-lg font-semibold mb-4">${title}</h3><form id="fm" class="grid sm:grid-cols-2 gap-3">${fs.map(f => { const tg = ['chk_dias', 'chk_lojas'].includes(f[2]) ? 'div' : 'label'; return `<${tg} class="text-sm ${['textarea', 'chk_dias', 'chk_lojas'].includes(f[2]) ? 'sm:col-span-2' : ''}"><span class="block mb-1 text-gray-600">${f[1]}</span>${inp(f, rec[f[0]], ctx)}</${tg}>`; }).join('')}<div class="sm:col-span-2 flex justify-end gap-2 pt-2"><button type="button" class="${G}" data-a="x">Cancelar</button><button class="${B}">Salvar</button></div></form>`);
   
   $('#fm').onsubmit = async e => {
     e.preventDefault();
     const v = {};
     for (const f of fs) {
       const k = f[0];
-      if (f[2] === 'chk_dias' || f[2] === 'chk_lojas') {
+      if (f[2] === 'chk_lojas') {
+        if (!PERC.length) return toast(`Selecione ao menos um item de ${f[1]}.`, 0);
+        v[k] = PERC.join(', ');
+        continue;
+      }
+      if (f[2] === 'chk_dias') {
         const cks = Array.from(e.target.querySelectorAll(`input[name="${k}"]:checked`)).map(c => c.value);
         if (!cks.length) return toast(`Selecione ao menos um item de ${f[1]}.`, 0);
         v[k] = cks.join(', ');
@@ -284,6 +304,7 @@ const form = (col, id, keys, title, onSave, ctx = {}) => {
       }
       let x = e.target[k]?.value?.trim() ?? '';
       if (x === '' && f[2] !== 'textarea' && !f[4]) return toast('Preencha o campo: ' + f[1], 0);
+      if (f[2] === 'url' && x !== '' && !/^https?:\/\//i.test(x)) return toast('Link inválido: use um endereço que comece com http.', 0);
       if (f[2] === 'number' && x !== '') {
         x = Number(x);
         if (isNaN(x) || x < 0) return toast(/^km|odometro/.test(k) ? 'Quilometragem inválida.' : 'Valor inválido.', 0);
@@ -318,8 +339,10 @@ const fmt = (col, r, k, id) => {
   }
   if (k === 'idLojas' && v) {
     const ids = String(v).split(', ');
-    return esc(ids.map(idLoja => D.lojas?.[idLoja]?.nomeLoja || '').filter(Boolean).join(', ') || v);
+    return esc(ids.map(idLoja => D.lojas?.[idLoja]?.nomeLoja || '').filter(Boolean).join(' → ') || v);
   }
+  if (k === 'linkMaps') return /^https?:\/\//i.test(v || '') ? `<a href="${esc(v)}" target="_blank" rel="noopener" class="text-blue-600 font-medium underline whitespace-nowrap">Abrir no Maps</a>` : '—';
+  if (k === 'kmEstimado' || k === 'odometro') return v !== undefined && v !== '' && v !== null ? Number(v).toLocaleString('pt-BR') + ' km' : '—';
   if (k === 'dataHoraSaida' || k === 'dataHoraChegada') return v ? new Date(v).toLocaleString('pt-BR') : '—';
   if ((f[2] || '').startsWith('ref:')) return esc(nm(f[2].slice(4), v));
   if (k === 'validadeCnh' && v) {
@@ -340,7 +363,7 @@ const stK = col => ['status', 'statusManutencao', 'statusExpedicao'].find(k => E
 
 const corpo = col => {
   const q = (F[col + 'q'] || '').toLowerCase(), s = F[col + 's'] || '', sk = stK(col);
-  const rows = Object.entries(D[col] || {}).sort((a, b) => (b[1].criadoEm || b[1].dataHoraSaida || 0) - (a[1].criadoEm || a[1].dataHoraSaida || 0)).filter(([i, r]) => (!s || r[sk] === s) && E[col].c.map(k => fmt(col, r, k, i)).join(' ').replace(/<[^>]+>/g, '').toLowerCase().includes(q));
+  const rows = Object.entries(D[col] || {}).sort((a, b) => col === 'lojas' ? porNome(a, b) : (b[1].criadoEm || b[1].dataHoraSaida || 0) - (a[1].criadoEm || a[1].dataHoraSaida || 0)).filter(([i, r]) => (!s || r[sk] === s) && E[col].c.map(k => fmt(col, r, k, i)).join(' ').replace(/<[^>]+>/g, '').toLowerCase().includes(q));
   if (!rows.length) return `<tr><td colspan="10" class="p-6 text-center text-gray-400">Nenhum registro encontrado.</td></tr>`;
   
   return rows.map(([i, r]) => {
@@ -376,7 +399,7 @@ const lista = col => {
     const abs = Object.values(D.abastecimentos || {}), totLitros = abs.reduce((a, b) => a + Number(b.litros || 0), 0), totValor = abs.reduce((a, b) => a + Number(b.valor || 0), 0);
     extra = `<div class="grid sm:grid-cols-3 gap-3 mb-4">${card('Total gasto com combustíveis', 'R$ ' + totValor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }))}${card('Total de litros', totLitros.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) + ' L')}${card('Abastecimentos', abs.length)}</div>`;
   }
-  return `<div class="flex flex-wrap gap-2 items-center justify-between mb-4"><h2 class="text-2xl font-bold">${E1.t}</h2><div class="flex gap-2"><button class="${G}" data-a="rel" data-c="${col}">${svg('clip', 'w-4 h-4 inline -mt-0.5')} Gerar relatório</button><button class="${B}" data-a="new" data-c="${col}">${E1.n}</button></div></div>${extra}
+  return `<div class="flex flex-wrap gap-2 items-center justify-between mb-4"><h2 class="text-2xl font-bold">${E1.t}</h2><div class="flex flex-wrap gap-2">${col === 'abastecimentos' ? `<button class="${G}" data-a="consumo">${svg('gauge', 'w-4 h-4 inline -mt-0.5')} Média de consumo</button>` : ''}<button class="${G}" data-a="rel" data-c="${col}">${svg('clip', 'w-4 h-4 inline -mt-0.5')} Gerar relatório</button><button class="${B}" data-a="new" data-c="${col}">${E1.n}</button></div></div>${extra}
 <div class="flex gap-2 mb-3"><input id="q" placeholder="Pesquisar..." value="${esc(F[col + 'q'] || '')}" class="${IC} max-w-xs">${sk ? `<select id="s" class="${IC} max-w-[11rem]"><option value="">Todos os status</option>${vals.map(x => `<option ${x === F[col + 's'] ? 'selected' : ''}>${x}</option>`).join('')}</select>` : ''}</div>
 <div class="bg-white border border-gray-200 rounded-2xl overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50 text-left text-xs text-gray-500 uppercase tracking-wide"><tr>${E1.c.map(k => `<th class="px-4 py-3 font-semibold">${LB[k] || fl(col, k)[1] || k}</th>`).join('')}<th></th></tr></thead><tbody id="tb">${corpo(col)}</tbody></table></div>`;
 };
@@ -412,6 +435,27 @@ const det = (col, id) => {
     return `<div class="flex justify-between border-b py-1.5 text-sm"><span class="text-gray-600">${l}</span><span>${fmt(col, r, k, id)}</span></div>`;
   }).join('');
   modal(`<h3 class="text-lg font-semibold mb-3">Detalhes</h3>${rows}<div class="flex justify-end gap-2 mt-4"><button class="${G}" data-a="edit" data-c="${col}" data-i="${id}">Editar</button><button class="bg-red-600 text-white rounded px-3 py-2 text-sm" data-a="del" data-c="${col}" data-i="${id}">Excluir</button><button class="${B}" data-a="x">Fechar</button></div>`);
+};
+
+/* MÉDIA DE CONSUMO (abastecimentos) */
+const consumo = () => {
+  modal(`<h3 class="text-lg font-semibold mb-1">Média de consumo</h3><p class="text-sm text-gray-500 mb-4">(KM final registrado − KM inicial registrado) ÷ total de litros abastecidos no período.</p><form id="cf" class="grid sm:grid-cols-2 gap-3"><label class="text-sm sm:col-span-2"><span class="block mb-1 text-gray-600">Veículo</span>${inp(['idVeiculo', 'Veículo', 'ref:veiculos'], '', { todos: 1 })}</label><label class="text-sm"><span class="block mb-1 text-gray-600">Data inicial</span><input type="date" name="de" class="${IC}"></label><label class="text-sm"><span class="block mb-1 text-gray-600">Data final</span><input type="date" name="ate" class="${IC}"></label><div id="cres" class="sm:col-span-2"></div><div class="sm:col-span-2 flex justify-end gap-2 pt-2"><button type="button" class="${G}" data-a="x">Fechar</button><button class="${B}">Calcular</button></div></form>`);
+  $('#cf').onsubmit = e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.target));
+    if (!f.idVeiculo) return toast('Selecione o veículo.', 0);
+    if (f.de && f.ate && f.de > f.ate) return toast('A data inicial é depois da data final.', 0);
+    const rs = Object.values(D.abastecimentos || {}).filter(a => a.idVeiculo === f.idVeiculo && temOdo(a) && (!f.de || a.data >= f.de) && (!f.ate || a.data <= f.ate)).sort((a, b) => Number(a.odometro) - Number(b.odometro));
+    if (rs.length < 2) {
+      $('#cres').innerHTML = `<div class="p-3 rounded-xl bg-yellow-50 text-yellow-900 text-sm">São necessários pelo menos 2 abastecimentos com odômetro desse veículo no período para calcular a média.</div>`;
+      return;
+    }
+    const km = Number(rs.at(-1).odometro) - Number(rs[0].odometro);
+    const lt = rs.reduce((a, r) => a + Number(r.litros || 0), 0);
+    const vl = rs.reduce((a, r) => a + Number(r.valor || 0), 0);
+    const bx = (l, v) => `<div class="border border-gray-200 rounded-xl p-3"><div class="text-xs text-gray-500">${l}</div><div class="text-lg font-bold">${v}</div></div>`;
+    $('#cres').innerHTML = `<div class="grid grid-cols-2 gap-2">${bx('Média de consumo', lt > 0 ? n2(km / lt) + ' km/L' : '—')}${bx('KM percorridos', km.toLocaleString('pt-BR') + ' km')}${bx('Litros abastecidos', n2(lt) + ' L')}${bx('Custo por km', km > 0 ? 'R$ ' + n2(vl / km) : '—')}</div><p class="text-xs text-gray-400 mt-2">${rs.length} abastecimentos de ${esc(nm('veiculos', f.idVeiculo))}, de ${dt(rs[0].data)} (${Number(rs[0].odometro).toLocaleString('pt-BR')} km) a ${dt(rs.at(-1).data)} (${Number(rs.at(-1).odometro).toLocaleString('pt-BR')} km).</p>`;
+  };
 };
 
 /* RELATÓRIOS DO SISTEMA */
@@ -479,6 +523,7 @@ const relatorio = (col, f) => {
       const d = r.data || r.dataHora || (r.dataHoraSaida ? new Date(r.dataHoraSaida).toLocaleDateString('sv') : '');
       return (!f.de || !d || d >= f.de) && (!f.ate || !d || d <= f.ate) && (!f.idVeiculo || r.idVeiculo === f.idVeiculo) && (!f.combustivel || r.combustivel === f.combustivel);
     });
+    if (col === 'lojas') rawRows.sort(porNome);
     
     kv = [['Total de Registros', rawRows.length]];
     if (col === 'abastecimentos') {
@@ -487,7 +532,7 @@ const relatorio = (col, f) => {
       kv.push(['Valor Total', 'R$ ' + totV.toLocaleString('pt-BR', { minimumFractionDigits: 2 })]);
       kv.push(['Litros Totais', totL.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) + ' L']);
     }
-    rowsData = rawRows.map(([i, r]) => ks.map(k => txt(fmt(col, r, k, i))));
+    rowsData = rawRows.map(([i, r]) => ks.map(k => k === 'linkMaps' ? (r[k] || '—') : txt(fmt(col, r, k, i))));
   }
 
   RL = { col, h, d: rowsData };
@@ -533,6 +578,22 @@ document.addEventListener('click', e => {
   const { a, c, i } = b.dataset;
 
   if (a === 'rel') return relForm(c);
+  if (a === 'consumo') return consumo();
+  if (a === 'pmov') {
+    const n = +i, m = n + Number(c);
+    if (m < 0 || m >= PERC.length) return;
+    [PERC[n], PERC[m]] = [PERC[m], PERC[n]];
+    $('#perc').innerHTML = percHtml();
+    return;
+  }
+  if (a === 'gmaps') {
+    if (!PERC.length) return toast('Marque ao menos uma loja no percurso.', 0);
+    const url = 'https://www.google.com/maps/dir/' + PERC.map(id => encodeURIComponent([D.lojas[id]?.endereco, D.lojas[id]?.cidade].filter(Boolean).join(', '))).join('/');
+    const el = document.querySelector('#fm [name="linkMaps"]');
+    if (el) el.value = url;
+    toast('Link gerado a partir do percurso.');
+    return;
+  }
   if (a === 'rx') { $('#rel').classList.add('hidden'); document.body.classList.remove('pr'); return; }
   if (a === 'rprint') return window.print();
   if (a === 'rcsv') return csv();
@@ -573,6 +634,13 @@ document.addEventListener('click', e => {
 });
 
 document.addEventListener('input', e => {
+  if (e.target.id === 'lq') {
+    const q = norm(e.target.value.trim());
+    let n = 0;
+    document.querySelectorAll('#lojasBox [data-n]').forEach(l => { const ok = l.dataset.n.includes(q); l.classList.toggle('hidden', !ok); n += ok; });
+    $('#lojasVazio').classList.toggle('hidden', n > 0);
+    return;
+  }
   if (e.target.id === 'q' || e.target.id === 's') {
     const col = MENU.find(m => m[0] === view)[1];
     F[col + e.target.id] = e.target.value;
@@ -580,7 +648,17 @@ document.addEventListener('input', e => {
   }
 });
 
+document.addEventListener('keydown', e => {
+  if (e.target.id === 'lq' && e.key === 'Enter') e.preventDefault();
+});
+
 document.addEventListener('change', e => {
+  if (e.target.hasAttribute('data-perc')) {
+    const id = e.target.value;
+    PERC = e.target.checked ? [...PERC.filter(x => x !== id), id] : PERC.filter(x => x !== id);
+    $('#perc').innerHTML = percHtml();
+    return;
+  }
   const k = e.target.dataset.f;
   if (k) { F.d[k] = e.target.value; render(); }
 });
