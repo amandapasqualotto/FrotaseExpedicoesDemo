@@ -438,14 +438,28 @@ const det = (col, id) => {
 };
 
 /* MÉDIA DE CONSUMO (abastecimentos) */
+let CR = null;
+const consumoRel = () => {
+  if (!CR) return;
+  const { f, re, km, lt, vl } = CR, col = 'abastecimentos';
+  const txt = h => { const d = document.createElement('div'); d.innerHTML = h; return d.textContent; };
+  const ks = E[col].c, h = ks.map(k => LB[k] || fl(col, k)[1] || k);
+  const rows = re.map(([i, r]) => ks.map(k => txt(fmt(col, r, k, i))));
+  const veic = nm('veiculos', f.idVeiculo);
+  const per = f.de || f.ate ? `${f.de ? dt(f.de) : 'Início'} a ${f.ate ? dt(f.ate) : 'Hoje'}` : 'Todo o período';
+  const kv = [['Média de consumo', lt > 0 ? n2(km / lt) + ' km/L' : '—'], ['KM percorridos', km.toLocaleString('pt-BR') + ' km'], ['Litros abastecidos', n2(lt) + ' L'], ['Custo por km', km > 0 ? 'R$ ' + n2(vl / km) : '—'], ['Valor total', 'R$ ' + n2(vl)], ['Abastecimentos', re.length], ['Odômetro inicial', Number(re[0][1].odometro).toLocaleString('pt-BR') + ' km'], ['Odômetro final', Number(re.at(-1)[1].odometro).toLocaleString('pt-BR') + ' km']];
+  const top = [['Relatório de Média de Consumo'], ['Veículo', veic], ['Período', per], ['Cálculo', '(KM final - KM inicial) / total de litros'], ...kv];
+  relShow('consumo', 'Relatório de Média de Consumo', `Veículo: ${esc(veic)} · Período: ${per} · Cálculo: (KM final − KM inicial) ÷ total de litros`, kv, h, rows, top);
+};
 const consumo = () => {
+  CR = null;
   modal(`<h3 class="text-lg font-semibold mb-1">Média de consumo</h3><p class="text-sm text-gray-500 mb-4">(KM final registrado − KM inicial registrado) ÷ total de litros abastecidos no período.</p><form id="cf" class="grid sm:grid-cols-2 gap-3"><label class="text-sm sm:col-span-2"><span class="block mb-1 text-gray-600">Veículo</span>${inp(['idVeiculo', 'Veículo', 'ref:veiculos'], '', { todos: 1 })}</label><label class="text-sm"><span class="block mb-1 text-gray-600">Data inicial</span><input type="date" name="de" class="${IC}"></label><label class="text-sm"><span class="block mb-1 text-gray-600">Data final</span><input type="date" name="ate" class="${IC}"></label><div id="cres" class="sm:col-span-2"></div><div class="sm:col-span-2 flex justify-end gap-2 pt-2"><button type="button" class="${G}" data-a="x">Fechar</button><button class="${B}">Calcular</button></div></form>`);
   $('#cf').onsubmit = e => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
     if (!f.idVeiculo) return toast('Selecione o veículo.', 0);
     if (f.de && f.ate && f.de > f.ate) return toast('A data inicial é depois da data final.', 0);
-    const rs = Object.values(D.abastecimentos || {}).filter(a => a.idVeiculo === f.idVeiculo && temOdo(a) && (!f.de || a.data >= f.de) && (!f.ate || a.data <= f.ate)).sort((a, b) => Number(a.odometro) - Number(b.odometro));
+    const re = Object.entries(D.abastecimentos || {}).filter(([, a]) => a.idVeiculo === f.idVeiculo && temOdo(a) && (!f.de || a.data >= f.de) && (!f.ate || a.data <= f.ate)).sort((a, b) => Number(a[1].odometro) - Number(b[1].odometro)), rs = re.map(x => x[1]);
     if (rs.length < 2) {
       $('#cres').innerHTML = `<div class="p-3 rounded-xl bg-yellow-50 text-yellow-900 text-sm">São necessários pelo menos 2 abastecimentos com odômetro desse veículo no período para calcular a média.</div>`;
       return;
@@ -454,7 +468,8 @@ const consumo = () => {
     const lt = rs.reduce((a, r) => a + Number(r.litros || 0), 0);
     const vl = rs.reduce((a, r) => a + Number(r.valor || 0), 0);
     const bx = (l, v) => `<div class="border border-gray-200 rounded-xl p-3"><div class="text-xs text-gray-500">${l}</div><div class="text-lg font-bold">${v}</div></div>`;
-    $('#cres').innerHTML = `<div class="grid grid-cols-2 gap-2">${bx('Média de consumo', lt > 0 ? n2(km / lt) + ' km/L' : '—')}${bx('KM percorridos', km.toLocaleString('pt-BR') + ' km')}${bx('Litros abastecidos', n2(lt) + ' L')}${bx('Custo por km', km > 0 ? 'R$ ' + n2(vl / km) : '—')}</div><p class="text-xs text-gray-400 mt-2">${rs.length} abastecimentos de ${esc(nm('veiculos', f.idVeiculo))}, de ${dt(rs[0].data)} (${Number(rs[0].odometro).toLocaleString('pt-BR')} km) a ${dt(rs.at(-1).data)} (${Number(rs.at(-1).odometro).toLocaleString('pt-BR')} km).</p>`;
+    $('#cres').innerHTML = `<div class="grid grid-cols-2 gap-2">${bx('Média de consumo', lt > 0 ? n2(km / lt) + ' km/L' : '—')}${bx('KM percorridos', km.toLocaleString('pt-BR') + ' km')}${bx('Litros abastecidos', n2(lt) + ' L')}${bx('Custo por km', km > 0 ? 'R$ ' + n2(vl / km) : '—')}</div><div class="flex justify-end mt-3"><button type="button" class="${B}" data-a="consrel">Baixar relatório (Excel / PDF)</button></div><p class="text-xs text-gray-400 mt-2">${rs.length} abastecimentos de ${esc(nm('veiculos', f.idVeiculo))}, de ${dt(rs[0].data)} (${Number(rs[0].odometro).toLocaleString('pt-BR')} km) a ${dt(rs.at(-1).data)} (${Number(rs.at(-1).odometro).toLocaleString('pt-BR')} km).</p>`;
+    CR = { f, re, km, lt, vl };
   };
 };
 
@@ -535,7 +550,11 @@ const relatorio = (col, f) => {
     rowsData = rawRows.map(([i, r]) => ks.map(k => k === 'linkMaps' ? (r[k] || '—') : txt(fmt(col, r, k, i))));
   }
 
-  RL = { col, h, d: rowsData };
+  relShow(col, title, f.de ? `Período: ${dt(f.de)} a ${f.ate ? dt(f.ate) : 'Hoje'}` : 'Listagem Geral Completa', kv, h, rowsData);
+};
+
+const relShow = (col, title, sub, kv, h, rowsData, csvTop = null) => {
+  RL = { col, h, d: rowsData, k: csvTop };
   
   $('#rel').innerHTML = `<div class="max-w-5xl mx-auto">
     <div class="noprint flex flex-wrap gap-2 justify-end mb-4">
@@ -550,7 +569,7 @@ const relatorio = (col, f) => {
           <span class="font-bold text-gray-800">Frotas & Expedições</span>
         </div>
         <h1 class="text-2xl font-bold">${title}</h1>
-        <p class="text-sm text-gray-500">${f.de ? `Período: ${dt(f.de)} a ${f.ate ? dt(f.ate) : 'Hoje'}` : 'Listagem Geral Completa'}</p>
+        <p class="text-sm text-gray-500">${sub}</p>
       </div>
       <div class="text-sm text-gray-500 text-right">Gerado em<br>${new Date().toLocaleString('pt-BR')}</div>
     </div>
@@ -564,7 +583,7 @@ const relatorio = (col, f) => {
 
 const csv = () => {
   const q = x => `"${String(x).replace(/"/g, '""')}"`;
-  const t = '\ufeff' + [RL.h, ...RL.d].map(l => l.map(q).join(';')).join('\r\n');
+  const t = '\ufeff' + [...(RL.k ? [...RL.k, []] : []), RL.h, ...RL.d].map(l => l.map(q).join(';')).join('\r\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([t], { type: 'text/csv;charset=utf-8' }));
   a.download = `relatorio-${RL.col}-${new Date().toLocaleDateString('sv')}.csv`;
@@ -579,6 +598,7 @@ document.addEventListener('click', e => {
 
   if (a === 'rel') return relForm(c);
   if (a === 'consumo') return consumo();
+  if (a === 'consrel') return consumoRel();
   if (a === 'pmov') {
     const n = +i, m = n + Number(c);
     if (m < 0 || m >= PERC.length) return;
