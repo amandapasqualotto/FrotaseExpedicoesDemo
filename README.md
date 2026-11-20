@@ -182,7 +182,7 @@ const E = {
 |---|---|
 | 🏢 **Production** | The client's version has login and password, **role-based access** (Coordinator and Driver) and a Firebase database |
 | 🧪 **Public demo** | Runs entirely in the browser with **fictional data** in `localStorage`, so no company data is exposed |
-| ♻️ **Reset** | The **"Restaurar Dados Iniciais"** button brings back the original sample data at any time |
+| ♻️ **Reset** | The **"Restaurar dados de exemplo"** button brings back the original sample data at any time |
 
 <br/>
 
@@ -368,7 +368,7 @@ const E = {
 |---|---|
 | 🏢 **Produção** | A versão do cliente tem login e senha, **perfis de acesso** (Coordenador e Motorista) e banco de dados no Firebase |
 | 🧪 **Demo pública** | Roda inteira no navegador com **dados fictícios** no `localStorage`, sem expor nenhuma informação da empresa |
-| ♻️ **Restaurar** | O botão **"Restaurar Dados Iniciais"** traz de volta os dados de exemplo a qualquer momento |
+| ♻️ **Restaurar** | O botão **"Restaurar dados de exemplo"** traz de volta os dados de exemplo a qualquer momento |
 
 <br/>
 

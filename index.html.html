@@ -4,22 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Frotas & Expedições - Gestão Operacional (Demo)</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9' stroke='%231C1E24' fill='%23FFFFFF'/%3E%3Cpolygon points='12,6 14.5,12 12,10 9.5,12' fill='%23FF5A00' stroke='%23FF5A00'/%3E%3Cpolygon points='12,18 14.5,12 12,14 9.5,12' fill='%231C1E24' stroke='%231C1E24'/%3E%3Cline x1='12' y1='3' x2='12' y2='5' stroke='%23FF5A00' stroke-width='2'/%3E%3Cline x1='12' y1='19' x2='12' y2='21' stroke='%231C1E24' stroke-width='2'/%3E%3Cline x1='3' y1='12' x2='5' y2='12' stroke='%231C1E24' stroke-width='2'/%3E%3Cline x1='19' y1='12' x2='21' y2='12' stroke='%231C1E24' stroke-width='2'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23FF5A00'/%3E%3Cpath d='M9.5 21.5C9.5 14 22.5 18 22.5 10.5' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-dasharray='3.2 2.6'/%3E%3Ccircle cx='9.5' cy='23' r='3' fill='%23FF5A00' stroke='%23fff' stroke-width='2.2'/%3E%3Ccircle cx='22.5' cy='9' r='3.4' fill='%23fff'/%3E%3C/svg%3E">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
   suppressWarning: true,
   theme: {
     extend: {
-      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
-      colors: { brand: { DEFAULT: '#FF5A00', dark: '#E04E00' }, ink: '#0A0A0A' }
+      fontFamily: { sans: ['Barlow', 'system-ui', 'sans-serif'], display: ['"Barlow Semi Condensed"', 'Barlow', 'system-ui', 'sans-serif'] },
+      colors: { brand: { DEFAULT: '#FF5A00', dark: '#D94C00', soft: '#FFF1E8' }, ink: '#1A1D23', canvas: '#F1F2F4', linha: '#E2E4E8', grafite: '#5B616E' }
     }
   }
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
+.num { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid #FF5A00; outline-offset: 2px; }
+#side nav::-webkit-scrollbar { width: 6px; } #side nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 3px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 @media print {
   body.pr > *:not(#rel) { display: none !important; }
   body.pr #rel { position: static !important; overflow: visible !important; }
@@ -27,7 +31,7 @@ tailwind.config = {
 }
 </style>
 </head>
-<body class="bg-[#F5F6F8] text-ink antialiased font-sans">
+<body class="bg-canvas text-ink antialiased font-sans">
 <div id="app"></div>
 <div id="m"></div>
 <div id="rel" class="hidden fixed inset-0 z-50 bg-white overflow-auto p-6"></div>
@@ -97,25 +101,27 @@ let me = D.usuarios["usr_demo"];
 let view = 'Dashboard';
 let F = {};
 
-const B = 'bg-brand hover:bg-brand-dark text-white rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition-colors';
-const G = 'border border-gray-300 bg-white rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-gray-100 transition-colors';
-const IC = 'w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand';
+const B = 'inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors';
+const G = 'inline-flex items-center justify-center gap-2 border border-linha bg-white text-ink rounded-lg px-4 py-2.5 text-sm font-medium hover:border-gray-400 hover:bg-gray-50 transition-colors';
+const IC = 'w-full border border-linha rounded-lg px-3 py-2.5 text-sm bg-white text-ink placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/25 focus:border-brand';
 
 const toast = (m, ok = 1) => {
   const d = document.createElement('div');
-  d.className = `px-4 py-2 rounded shadow-lg text-sm text-white ${ok ? 'bg-green-600' : 'bg-red-600'} transition-all`;
+  d.className = `max-w-sm px-4 py-3 rounded-lg shadow-lg text-sm text-white bg-ink border-l-4 ${ok ? 'border-emerald-400' : 'border-red-400'}`;
   d.textContent = m;
   $('#toast').append(d);
   setTimeout(() => d.remove(), 4000);
 };
 
 const modal = h => {
-  $('#m').innerHTML = h ? `<div class="fixed inset-0 bg-black/50 z-40 flex items-start justify-center overflow-auto p-4"><div class="bg-white rounded-xl w-full max-w-2xl p-6 my-8 shadow-2xl">${h}</div></div>` : '';
+  $('#m').innerHTML = h ? `<div class="fixed inset-0 bg-ink/60 backdrop-blur-[2px] z-40 flex items-start justify-center overflow-auto p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 sm:p-7 my-8">${h}</div></div>` : '';
 };
 
-const BG = { green: 'bg-green-100 text-green-800', blue: 'bg-blue-100 text-blue-800', orange: 'bg-orange-100 text-orange-800', yellow: 'bg-yellow-100 text-yellow-800', red: 'bg-red-100 text-red-800', gray: 'bg-gray-200 text-gray-700' };
+const BG = { green: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20', blue: 'bg-sky-50 text-sky-700 ring-sky-600/20', orange: 'bg-orange-50 text-orange-700 ring-orange-600/20', yellow: 'bg-amber-50 text-amber-800 ring-amber-600/25', red: 'bg-red-50 text-red-700 ring-red-600/20', gray: 'bg-gray-100 text-gray-600 ring-gray-500/20' };
 const BC = { 'Disponível': 'green', 'Em uso': 'blue', 'Manutenção': 'orange', 'Em rota': 'blue', 'Finalizada': 'green', 'Atenção': 'yellow', 'Crítico': 'red', 'Inativo': 'gray', 'Ativo': 'green', 'Aberta': 'orange', 'OK': 'green', 'Gasolina': 'blue', 'Diesel': 'orange', 'Etanol': 'green', 'GNV': 'yellow' };
-const badge = (s, t = s) => `<span class="px-2 py-0.5 rounded-full text-xs font-medium ${BG[BC[s] || 'gray']}">${esc(t)}</span>`;
+const badge = (s, t = s) => `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ring-1 ring-inset whitespace-nowrap ${BG[BC[s] || 'gray']}">${esc(t)}</span>`;
+const logo = (c = 'w-9 h-9') => `<svg class="${c} shrink-0" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#FF5A00"/><path d="M9.5 21.5C9.5 14 22.5 18 22.5 10.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3.2 2.6"/><circle cx="9.5" cy="23" r="3" fill="#FF5A00" stroke="#fff" stroke-width="2.2"/><circle cx="22.5" cy="9" r="3.4" fill="#fff"/></svg>`;
+const marca = (dark = 0, big = 0) => `<div class="flex items-center gap-3">${logo(big ? 'w-11 h-11' : 'w-9 h-9')}<div class="leading-tight"><div class="font-display ${big ? 'text-xl' : 'text-[17px]'} font-semibold tracking-tight ${dark ? 'text-white' : 'text-ink'}">Frotas &amp; Expedições</div><div class="text-[13px] ${dark ? 'text-gray-400' : 'text-grafite'}">Gestão operacional</div></div></div>`;
 
 const P = {
   grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
@@ -132,16 +138,7 @@ const P = {
   check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>',
   dollar: '<line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
   fuel: '<path d="M3 22h12"/><path d="M4 9h10V2H4z"/><path d="M10 9v11"/><path d="M15 5h2a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-2"/><circle cx="7" cy="15" r="2"/>',
-  menu: '<line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>',
-  logo: `<g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="9" stroke="#1C1E24" fill="#FFFFFF"/>
-    <polygon points="12,6 14.5,12 12,10 9.5,12" fill="#FF5A00" stroke="#FF5A00"/>
-    <polygon points="12,18 14.5,12 12,14 9.5,12" fill="#1C1E24" stroke="#1C1E24"/>
-    <line x1="12" y1="3" x2="12" y2="5" stroke="#FF5A00" stroke-width="2"/>
-    <line x1="12" y1="19" x2="12" y2="21" stroke="#1C1E24" stroke-width="2"/>
-    <line x1="3" y1="12" x2="5" y2="12" stroke="#1C1E24" stroke-width="2"/>
-    <line x1="19" y1="12" x2="21" y2="12" stroke="#1C1E24" stroke-width="2"/>
-  </g>`
+  menu: '<line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>'
 };
 
 const svg = (n, c = 'w-5 h-5') => `<svg class="${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${P[n]}</svg>`;
@@ -249,15 +246,15 @@ const inp = ([k, l, t = 'text', o], v, ctx) => {
   if (t === 'sel') return `<select name="${k}" class="${IC}"><option value=""></option>${o.map(x => `<option ${x === v ? 'selected' : ''}>${x}</option>`).join('')}</select>`;
   if (t === 'chk_dias') {
     const sel = Array.isArray(v) ? v : (v ? String(v).split(', ') : []);
-    return `<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 border border-gray-300 rounded-xl p-3 bg-white">${DIAS.map(d => `<label class="inline-flex items-center gap-1.5 text-xs text-gray-700 cursor-pointer"><input type="checkbox" name="${k}" value="${d}" ${sel.includes(d) ? 'checked' : ''} class="rounded border-gray-300 text-brand focus:ring-brand"> ${d}</label>`).join('')}</div>`;
+    return `<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 border border-linha rounded-lg p-3 bg-white">${DIAS.map(d => `<label class="inline-flex items-center gap-1.5 text-xs text-gray-700 cursor-pointer"><input type="checkbox" name="${k}" value="${d}" ${sel.includes(d) ? 'checked' : ''} class="rounded border-gray-300 text-brand focus:ring-brand"> ${d}</label>`).join('')}</div>`;
   }
   if (t === 'chk_lojas') {
     const lojasList = Object.entries(D.lojas || {}).sort(porNome);
     if (!lojasList.length) return `<div class="text-xs text-gray-500 italic">Cadastre lojas primeiro.</div>`;
     PERC = (Array.isArray(v) ? v : (v ? String(v).split(', ') : [])).filter(id => D.lojas[id]);
     return `<input id="lq" type="search" placeholder="Pesquisar loja por nome ou cidade..." class="${IC} mb-2" autocomplete="off">
-<div id="lojasBox" class="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-gray-300 rounded-xl p-3 bg-white max-h-40 overflow-y-auto">${lojasList.map(([id, r]) => `<label data-n="${esc(norm(r.nomeLoja + ' ' + r.cidade))}" class="inline-flex items-center gap-1.5 text-xs text-gray-700 cursor-pointer"><input type="checkbox" name="${k}" value="${id}" data-perc ${PERC.includes(id) ? 'checked' : ''} class="rounded border-gray-300 text-brand focus:ring-brand"> ${esc(r.nomeLoja)} (${esc(r.cidade)})</label>`).join('')}<div id="lojasVazio" class="hidden text-xs text-gray-400 italic">Nenhuma loja encontrada.</div></div>
-<div class="mt-3"><span class="block mb-1 text-gray-600">Percurso (ordem de visita)</span><ol id="perc" class="space-y-1 bg-gray-50 border border-gray-200 rounded-xl p-2">${percHtml()}</ol></div>`;
+<div id="lojasBox" class="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-linha rounded-lg p-3 bg-white max-h-40 overflow-y-auto">${lojasList.map(([id, r]) => `<label data-n="${esc(norm(r.nomeLoja + ' ' + r.cidade))}" class="inline-flex items-center gap-1.5 text-xs text-gray-700 cursor-pointer"><input type="checkbox" name="${k}" value="${id}" data-perc ${PERC.includes(id) ? 'checked' : ''} class="rounded border-gray-300 text-brand focus:ring-brand"> ${esc(r.nomeLoja)} (${esc(r.cidade)})</label>`).join('')}<div id="lojasVazio" class="hidden text-xs text-gray-400 italic">Nenhuma loja encontrada.</div></div>
+<div class="mt-3"><span class="block mb-1.5 font-medium text-grafite">Percurso (ordem de visita)</span><ol id="perc" class="space-y-1 bg-gray-50 border border-gray-200 rounded-xl p-2">${percHtml()}</ol></div>`;
   }
   if (t === 'file') return `<input name="${k}_file" id="${k}_file" type="file" accept="image/*" class="${IC}"><input type="hidden" name="${k}" value="${esc(v)}">${v ? `<div class="mt-1 text-xs text-green-700 font-medium">✓ Imagem já anexada</div>` : ''}`;
   if (t.startsWith('ref:')) {
@@ -271,7 +268,7 @@ const inp = ([k, l, t = 'text', o], v, ctx) => {
 
 const form = (col, id, keys, title, onSave, ctx = {}) => {
   const rec = id ? D[col][id] : {}, fs = keys.map(k => fl(col, k));
-  modal(`<h3 class="text-lg font-semibold mb-4">${title}</h3><form id="fm" class="grid sm:grid-cols-2 gap-3">${fs.map(f => { const tg = ['chk_dias', 'chk_lojas'].includes(f[2]) ? 'div' : 'label'; return `<${tg} class="text-sm ${['textarea', 'chk_dias', 'chk_lojas'].includes(f[2]) ? 'sm:col-span-2' : ''}"><span class="block mb-1 text-gray-600">${f[1]}</span>${inp(f, rec[f[0]], ctx)}</${tg}>`; }).join('')}<div class="sm:col-span-2 flex justify-end gap-2 pt-2"><button type="button" class="${G}" data-a="x">Cancelar</button><button class="${B}">Salvar</button></div></form>`);
+  modal(`<h3 class="font-display text-2xl font-semibold tracking-tight mb-5">${title}</h3><form id="fm" class="grid sm:grid-cols-2 gap-3">${fs.map(f => { const tg = ['chk_dias', 'chk_lojas'].includes(f[2]) ? 'div' : 'label'; return `<${tg} class="text-sm ${['textarea', 'chk_dias', 'chk_lojas'].includes(f[2]) ? 'sm:col-span-2' : ''}"><span class="block mb-1.5 font-medium text-grafite">${f[1]}</span>${inp(f, rec[f[0]], ctx)}</${tg}>`; }).join('')}<div class="sm:col-span-2 flex justify-end gap-2 pt-2"><button type="button" class="${G}" data-a="x">Cancelar</button><button class="${B}">Salvar</button></div></form>`);
   
   $('#fm').onsubmit = async e => {
     e.preventDefault();
@@ -321,7 +318,7 @@ const form = (col, id, keys, title, onSave, ctx = {}) => {
 };
 
 const conf = (msg, fn, ok = 'Registro excluído.') => {
-  modal(`<p class="mb-4">${msg}</p><div class="flex justify-end gap-2"><button class="${G}" data-a="x">Cancelar</button><button id="ok" class="bg-red-600 text-white rounded px-3 py-2 text-sm">Excluir</button></div>`);
+  modal(`<p class="mb-4">${msg}</p><div class="flex justify-end gap-2"><button class="${G}" data-a="x">Cancelar</button><button id="ok" class="bg-red-600 hover:bg-red-700 text-white rounded-lg px-4 py-2.5 text-sm font-semibold">Excluir</button></div>`);
   $('#ok').onclick = () => {
     try { fn(); modal(); toast(ok); } catch { toast('Erro ao processar.', 0); }
   };
@@ -332,16 +329,16 @@ const fmt = (col, r, k, id) => {
   const v = r[k], f = fl(col, k);
   if (k === 'id') return esc(id.slice(-6));
   if (k === 'checklist') {
-    return `<button class="text-brand font-medium underline inline-flex items-center gap-1" data-a="chkexp" data-i="${id}">${svg('clip', 'w-3.5 h-3.5')} Checklist (Ver mais)</button>`;
+    return `<button class="text-brand font-medium underline underline-offset-2 inline-flex items-center gap-1 whitespace-nowrap" data-a="chkexp" data-i="${id}">${svg('clip', 'w-3.5 h-3.5')} Checklist (Ver mais)</button>`;
   }
   if (k === 'fotoNota') {
-    return v ? `<button class="text-blue-600 font-medium underline" data-a="verfoto" data-i="${id}">Ver Foto</button>` : '—';
+    return v ? `<button class="text-brand font-medium underline underline-offset-2" data-a="verfoto" data-i="${id}">Ver Foto</button>` : '—';
   }
   if (k === 'idLojas' && v) {
     const ids = String(v).split(', ');
     return esc(ids.map(idLoja => D.lojas?.[idLoja]?.nomeLoja || '').filter(Boolean).join(' → ') || v);
   }
-  if (k === 'linkMaps') return /^https?:\/\//i.test(v || '') ? `<a href="${esc(v)}" target="_blank" rel="noopener" class="text-blue-600 font-medium underline whitespace-nowrap">Abrir no Maps</a>` : '—';
+  if (k === 'linkMaps') return /^https?:\/\//i.test(v || '') ? `<a href="${esc(v)}" target="_blank" rel="noopener" class="text-brand font-medium underline underline-offset-2 whitespace-nowrap hover:text-brand-dark">Abrir no Maps</a>` : '—';
   if (k === 'kmEstimado' || k === 'odometro') return v !== undefined && v !== '' && v !== null ? Number(v).toLocaleString('pt-BR') + ' km' : '—';
   if (k === 'dataHoraSaida' || k === 'dataHoraChegada') return v ? new Date(v).toLocaleString('pt-BR') : '—';
   if ((f[2] || '').startsWith('ref:')) return esc(nm(f[2].slice(4), v));
@@ -351,6 +348,7 @@ const fmt = (col, r, k, id) => {
   }
   if (f[2] === 'date') return dt(v);
   if (k === 'dataHora' && v) return new Date(v).toLocaleString('pt-BR');
+  if (k === 'litros') return v !== undefined && v !== '' ? Number(v).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + ' L' : '—';
   if (k === 'valor') return 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
   if (k === 'cotacao') return 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
   if (k === 'qtdAtencao') return v ? badge('Atenção', v) : '0';
@@ -367,25 +365,25 @@ const corpo = col => {
   if (!rows.length) return `<tr><td colspan="10" class="p-6 text-center text-gray-400">Nenhum registro encontrado.</td></tr>`;
   
   return rows.map(([i, r]) => {
-    const tone = col === 'inspecoes' ? (r.qtdCritico ? 'bg-red-50' : r.qtdAtencao ? 'bg-yellow-50' : '') : '';
-    const mainRow = `<tr class="border-t ${tone}">${E[col].c.map(k => `<td class="px-4 py-3">${fmt(col, r, k, i)}</td>`).join('')}<td class="px-4 py-3 whitespace-nowrap text-right">${col === 'expedicoes' && r.statusExpedicao === 'Em rota' ? `<button class="text-brand mr-2" data-a="fim" data-i="${i}">Finalizar</button>` : ''}<button class="text-blue-700 mr-2" data-a="edit" data-c="${col}" data-i="${i}">Editar</button><button class="text-red-600" data-a="del" data-c="${col}" data-i="${i}">Excluir</button></td></tr>`;
+    const tone = col === 'inspecoes' ? (r.qtdCritico ? 'bg-red-50/60' : r.qtdAtencao ? 'bg-amber-50/60' : '') : '';
+    const mainRow = `<tr class="border-t border-gray-100 hover:bg-gray-50/80 ${tone}">${E[col].c.map(k => `<td class="px-4 py-3">${fmt(col, r, k, i)}</td>`).join('')}<td class="px-4 py-3 whitespace-nowrap text-right">${col === 'expedicoes' && r.statusExpedicao === 'Em rota' ? `<button class="font-semibold text-brand hover:text-brand-dark mr-3" data-a="fim" data-i="${i}">Finalizar</button>` : ''}<button class="font-medium text-ink hover:text-brand mr-3" data-a="edit" data-c="${col}" data-i="${i}">Editar</button><button class="font-medium text-red-600 hover:text-red-700" data-a="del" data-c="${col}" data-i="${i}">Excluir</button></td></tr>`;
     
     if (col === 'inspecoes') {
       const chkItems = IN.map(k => `<div class="flex justify-between items-center text-xs border-b py-1"><span class="text-gray-600">${hum(k)}</span><span>${badge(r[k] || 'OK')}</span></div>`).join('');
-      const expRow = `<tr id="chk_${i}" class="hidden bg-gray-50/80"><td colspan="${E[col].c.length + 1}" class="p-4 border-b"><div class="bg-white border rounded-xl p-4 max-w-2xl shadow-sm"><div class="font-semibold text-xs uppercase text-gray-500 mb-2">Checklist de Inspeção do Veículo</div><div class="grid sm:grid-cols-2 gap-x-6 gap-y-1">${chkItems}</div></div></td></tr>`;
+      const expRow = `<tr id="chk_${i}" class="hidden bg-gray-50/80"><td colspan="${E[col].c.length + 1}" class="p-4 border-b"><div class="bg-white border rounded-xl p-4 max-w-2xl shadow-sm"><div class="font-semibold text-sm text-ink mb-2">Checklist de Inspeção do Veículo</div><div class="grid sm:grid-cols-2 gap-x-6 gap-y-1">${chkItems}</div></div></td></tr>`;
       return mainRow + expRow;
     }
     return mainRow;
   }).join('');
 };
 
-const bars = o => {
+const bars = (o, cor = {}) => {
   const m = Math.max(1, ...Object.values(o));
-  return Object.entries(o).map(([k, v]) => `<div class="flex items-center gap-2 text-xs mb-1"><span class="w-32 truncate">${esc(k)}</span><div class="flex-1 bg-gray-100 rounded h-3"><div class="bg-brand h-3 rounded" style="width:${v / m * 100}%"></div></div><span>${v}</span></div>`).join('') || '<p class="text-xs text-gray-400">Sem dados.</p>';
+  return Object.entries(o).map(([k, v]) => `<div class="flex items-center gap-3 text-[13px] mb-2.5 last:mb-0"><span class="w-36 truncate text-grafite" title="${esc(k)}">${esc(k)}</span><div class="flex-1 bg-gray-100 rounded-full h-2"><div class="${cor[k] || 'bg-brand'} h-2 rounded-full" style="width:${v / m * 100}%"></div></div><span class="w-16 text-right num font-semibold">${Number(v).toLocaleString('pt-BR')}</span></div>`).join('') || '<p class="text-sm text-gray-400">Sem dados no período.</p>';
 };
 
-const ci = l => /KM/i.test(l) ? 'gauge' : /Expedi/.test(l) ? 'pkg' : /uso/.test(l) ? 'truck' : /dispon/.test(l) ? 'check' : /manuten/i.test(l) ? 'wrench' : /Motorista/.test(l) ? 'user' : /crític/.test(l) ? 'alert' : /gasto/i.test(l) ? 'dollar' : /abastec/i.test(l) ? 'fuel' : 'grid';
-const card = (l, v) => `<div class="relative bg-white border border-gray-100 rounded-2xl p-5 pl-6 shadow-sm overflow-hidden"><span class="absolute left-0 top-0 bottom-0 w-1.5 bg-brand"></span><div class="flex justify-between items-start gap-2"><span class="text-sm text-gray-500 font-medium">${l}</span><span class="text-brand">${svg(ci(l))}</span></div><div class="text-3xl font-bold mt-3 tracking-tight">${v}</div></div>`;
+const ci = l => /KM/i.test(l) ? 'gauge' : /Expedi/.test(l) ? 'pkg' : /uso/.test(l) ? 'truck' : /dispon/.test(l) ? 'check' : /manuten/i.test(l) ? 'wrench' : /Motorista/.test(l) ? 'user' : /crític/.test(l) ? 'alert' : /gasto/i.test(l) ? 'dollar' : /abastec|litro/i.test(l) ? 'fuel' : 'grid';
+const card = (l, v) => `<div class="bg-white border border-linha rounded-xl p-5"><div class="flex items-center gap-2 text-sm text-grafite font-medium"><span class="text-brand">${svg(ci(l), 'w-4 h-4')}</span>${l}</div><div class="font-display text-3xl font-semibold tracking-tight mt-2 num">${v}</div></div>`;
 
 const lista = col => {
   const E1 = E[col], sk = stK(col), vals = [...new Set(Object.values(D[col] || {}).map(r => r[sk]).filter(Boolean))];
@@ -393,20 +391,20 @@ const lista = col => {
   if (col === 'manutencoes') {
     const ms = Object.values(D.manutencoes || {}), g = {};
     ms.forEach(m => g[nm('veiculos', m.idVeiculo)] = (g[nm('veiculos', m.idVeiculo)] || 0) + Number(m.valor || 0));
-    extra = `<div class="grid sm:grid-cols-3 gap-3 mb-4">${card('Total gasto', 'R$ ' + ms.reduce((a, m) => a + Number(m.valor || 0), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 }))}${card('Manutenções', ms.length)}${card('Em manutenção agora', ms.filter(m => m.statusManutencao === 'Aberta').length)}</div><div class="bg-white border rounded-2xl p-4 mb-4"><div class="text-sm font-medium mb-2">Gasto por veículo (R$)</div>${bars(g)}</div>`;
+    extra = `<div class="grid sm:grid-cols-3 gap-3 mb-5">${card('Total gasto', 'R$ ' + ms.reduce((a, m) => a + Number(m.valor || 0), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 }))}${card('Manutenções', ms.length)}${card('Em manutenção agora', ms.filter(m => m.statusManutencao === 'Aberta').length)}</div><div class="bg-white border border-linha rounded-xl p-5 mb-5"><h3 class="text-[15px] font-semibold mb-4">Gasto por veículo (R$)</h3>${bars(g)}</div>`;
   }
   if (col === 'abastecimentos') {
     const abs = Object.values(D.abastecimentos || {}), totLitros = abs.reduce((a, b) => a + Number(b.litros || 0), 0), totValor = abs.reduce((a, b) => a + Number(b.valor || 0), 0);
-    extra = `<div class="grid sm:grid-cols-3 gap-3 mb-4">${card('Total gasto com combustíveis', 'R$ ' + totValor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }))}${card('Total de litros', totLitros.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) + ' L')}${card('Abastecimentos', abs.length)}</div>`;
+    extra = `<div class="grid sm:grid-cols-3 gap-3 mb-5">${card('Total gasto com combustíveis', 'R$ ' + totValor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }))}${card('Total de litros', totLitros.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) + ' L')}${card('Abastecimentos', abs.length)}</div>`;
   }
-  return `<div class="flex flex-wrap gap-2 items-center justify-between mb-4"><h2 class="text-2xl font-bold">${E1.t}</h2><div class="flex flex-wrap gap-2">${col === 'abastecimentos' ? `<button class="${G}" data-a="consumo">${svg('gauge', 'w-4 h-4 inline -mt-0.5')} Média de consumo</button>` : ''}<button class="${G}" data-a="rel" data-c="${col}">${svg('clip', 'w-4 h-4 inline -mt-0.5')} Gerar relatório</button><button class="${B}" data-a="new" data-c="${col}">${E1.n}</button></div></div>${extra}
-<div class="flex gap-2 mb-3"><input id="q" placeholder="Pesquisar..." value="${esc(F[col + 'q'] || '')}" class="${IC} max-w-xs">${sk ? `<select id="s" class="${IC} max-w-[11rem]"><option value="">Todos os status</option>${vals.map(x => `<option ${x === F[col + 's'] ? 'selected' : ''}>${x}</option>`).join('')}</select>` : ''}</div>
-<div class="bg-white border border-gray-200 rounded-2xl overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50 text-left text-xs text-gray-500 uppercase tracking-wide"><tr>${E1.c.map(k => `<th class="px-4 py-3 font-semibold">${LB[k] || fl(col, k)[1] || k}</th>`).join('')}<th></th></tr></thead><tbody id="tb">${corpo(col)}</tbody></table></div>`;
+  return `<div class="flex flex-wrap gap-4 items-end justify-between mb-6"><div><h2 class="font-display text-[34px] leading-tight font-semibold tracking-tight">${E1.t}</h2><p class="text-grafite">${(n => n + (n === 1 ? ' registro' : ' registros'))(Object.keys(D[col] || {}).length)}</p></div><div class="flex flex-wrap gap-2">${col === 'abastecimentos' ? `<button class="${G}" data-a="consumo">${svg('gauge', 'w-4 h-4')} Média de consumo</button>` : ''}<button class="${G}" data-a="rel" data-c="${col}">${svg('clip', 'w-4 h-4')} Gerar relatório</button><button class="${B}" data-a="new" data-c="${col}">${E1.n}</button></div></div>${extra}
+<div class="flex flex-wrap gap-2 mb-3"><input id="q" placeholder="Pesquisar em ${E1.t.toLowerCase()}" value="${esc(F[col + 'q'] || '')}" class="${IC} max-w-xs">${sk ? `<select id="s" class="${IC} max-w-[11rem]"><option value="">Todos os status</option>${vals.map(x => `<option ${x === F[col + 's'] ? 'selected' : ''}>${x}</option>`).join('')}</select>` : ''}</div>
+<div class="bg-white border border-linha rounded-xl overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-[13px] text-grafite">${E1.c.map(k => `<th class="px-4 py-3 font-semibold border-b border-linha whitespace-nowrap">${LB[k] || fl(col, k)[1] || k}</th>`).join('')}<th class="border-b border-linha"></th></tr></thead><tbody id="tb">${corpo(col)}</tbody></table></div>`;
 };
 
 const dash = () => {
   const f = F.d || (F.d = {});
-  const sel = (k, c, l) => `<select data-f="${k}" class="${IC}"><option value="">${l}</option>${Object.entries(D[c] || {}).map(([i, r]) => `<option value="${i}" ${f[k] === i ? 'selected' : ''}>${esc(LAB[c](r))}</option>`).join('')}</select>`;
+  const sel = (k, c, l) => `<select data-f="${k}" aria-label="${l}" class="${IC}"><option value="">${l}</option>${Object.entries(D[c] || {}).map(([i, r]) => `<option value="${i}" ${f[k] === i ? 'selected' : ''}>${esc(LAB[c](r))}</option>`).join('')}</select>`;
   const ex = Object.values(D.expedicoes || {}).filter(e => {
     const d = new Date(e.dataHoraSaida).toLocaleDateString('sv');
     return (!f.de || d >= f.de) && (!f.ate || d <= f.ate) && (!f.m || e.idMotorista === f.m) && (!f.v || e.idVeiculo === f.v) && (!f.r || e.idRota === f.r) && (!f.s || e.statusExpedicao === f.s);
@@ -421,12 +419,39 @@ const dash = () => {
     gd[d] = (gd[d] || 0) + 1;
     gk[d] = (gk[d] || 0) + (e.kmRodado || 0);
   });
-  const man = Object.values(D.manutencoes || {}), box = (t, b) => `<div class="bg-white border border-gray-200 rounded-2xl p-4"><div class="text-sm font-medium mb-2">${t}</div>${b}</div>`;
-  return `<div class="flex flex-wrap justify-between items-end gap-2 mb-6"><div><h2 class="text-3xl font-bold">Olá, ${esc((me.nome || '').split(' ')[0])}!</h2><p class="text-gray-500">Resumo da sua operação em tempo real.</p></div><div class="flex gap-2 items-center"><button class="${G}" data-a="rel" data-c="dashboard">${svg('clip', 'w-4 h-4 inline -mt-0.5')} Relatório Geral</button><div class="text-right text-sm border-l pl-3"><div class="font-semibold">${new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}</div><div class="text-gray-400">Visão geral da operação</div></div></div></div>
-<div class="grid grid-cols-2 lg:grid-cols-6 gap-2 mb-4 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm"><input type="date" data-f="de" value="${f.de || ''}" class="${IC}"><input type="date" data-f="ate" value="${f.ate || ''}" class="${IC}">${sel('m', 'motoristas', 'Motorista')}${sel('v', 'veiculos', 'Veículo')}${sel('r', 'rotas', 'Rota')}<select data-f="s" class="${IC}"><option value="">Status</option><option ${f.s === 'Em rota' ? 'selected' : ''}>Em rota</option><option ${f.s === 'Finalizada' ? 'selected' : ''}>Finalizada</option></select></div>
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">${card('Expedições no período', ex.length)}${card('KM rodado no período', ex.reduce((a, e) => a + (e.kmRodado || 0), 0).toLocaleString('pt-BR'))}${card('Veículos em uso', cnt('Em uso'))}${card('Veículos disponíveis', cnt('Disponível'))}${card('Veículos em manutenção', cnt('Manutenção'))}${card('Motoristas ativos', ms.filter(m => m.status === 'Ativo').length)}${card('Inspeções com itens críticos', Object.values(D.inspecoes || {}).filter(i => i.qtdCritico > 0).length)}${card('Manutenções realizadas', man.length)}</div>
-${cnhAl ? `<div class="mb-4 p-3 rounded bg-yellow-100 text-yellow-900 text-sm">${cnhAl} motorista(s) com CNH vencida ou vencendo em até 30 dias.</div>` : ''}
-<div class="grid md:grid-cols-2 gap-3">${box('Expedições por período', bars(gd))}${box('Quilometragem por período', bars(gk))}${box('Expedições por motorista', bars(gm))}${box('Utilização da frota (expedições por veículo)', bars(gv))}${box('Distribuição de status dos veículos', bars({ 'Disponível': cnt('Disponível'), 'Em uso': cnt('Em uso'), 'Manutenção': cnt('Manutenção') }))}</div>`;
+  const man = Object.values(D.manutencoes || {}), crit = Object.values(D.inspecoes || {}).filter(i => i.qtdCritico > 0).length;
+  const box = (t, b) => `<section class="bg-white border border-linha rounded-xl p-5"><h3 class="text-[15px] font-semibold mb-4">${t}</h3>${b}</section>`;
+  const kpi = (l, v, ic, tone = '') => `<div class="bg-white p-5"><div class="flex items-center gap-2 text-sm text-grafite font-medium"><span class="${tone || 'text-brand'}">${svg(ic, 'w-4 h-4')}</span>${l}</div><div class="font-display text-[34px] leading-none font-semibold tracking-tight mt-3 num ${tone}">${v}</div></div>`;
+  /* abastecimento no período */
+  const ab = Object.values(D.abastecimentos || {}).filter(a => (!f.de || a.data >= f.de) && (!f.ate || a.data <= f.ate) && (!f.v || a.idVeiculo === f.v) && (!f.m || a.idMotorista === f.m));
+  const abL = ab.reduce((t, a) => t + Number(a.litros || 0), 0), abV = ab.reduce((t, a) => t + Number(a.valor || 0), 0);
+  const litro = x => Number(x || 0).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' L';
+  const porV = {};
+  ab.forEach(a => { const p = porV[a.idVeiculo] || (porV[a.idVeiculo] = { l: 0, v: 0, n: 0, odo: [] }); p.l += Number(a.litros || 0); p.v += Number(a.valor || 0); p.n++; if (temOdo(a)) p.odo.push([Number(a.odometro), Number(a.litros || 0)]); });
+  let kmT = 0, lT = 0;
+  const linhas = Object.entries(porV).map(([id, p]) => {
+    let c = null;
+    if (p.odo.length >= 2) {
+      const os = p.odo.map(x => x[0]), km = Math.max(...os) - Math.min(...os), l = p.odo.reduce((t, x) => t + x[1], 0);
+      if (l > 0) { c = km / l; kmT += km; lT += l; }
+    }
+    return { id, ...p, c };
+  }).sort((a, b) => b.v - a.v);
+  const mini = (l, v) => `<div><div class="text-sm text-grafite">${l}</div><div class="font-display text-[26px] leading-tight font-semibold tracking-tight mt-1 num">${v}</div></div>`;
+  const th = 'font-semibold pb-2 text-[13px] text-grafite';
+  const fuel = `<section class="bg-white border border-linha rounded-xl mb-5">
+<div class="flex flex-wrap items-baseline justify-between gap-2 px-5 pt-5"><h3 class="text-[15px] font-semibold flex items-center gap-2"><span class="text-brand">${svg('fuel', 'w-4 h-4')}</span>Abastecimento no período</h3><span class="text-xs text-grafite">Segue os filtros de data, motorista e veículo</span></div>
+<div class="grid lg:grid-cols-5 gap-x-8 gap-y-6 p-5">
+<div class="lg:col-span-2 grid grid-cols-2 gap-x-6 gap-y-5 content-start">${mini('Gasto com combustível', 'R$ ' + n2(abV))}${mini('Litros abastecidos', litro(abL))}${mini('Preço médio por litro', abL > 0 ? 'R$ ' + n2(abV / abL) : '—')}${mini('Consumo médio da frota', lT > 0 ? n2(kmT / lT) + ' km/L' : '—')}</div>
+<div class="lg:col-span-3 overflow-x-auto">${linhas.length ? `<table class="w-full text-sm"><thead><tr class="text-left"><th class="${th} pr-3">Veículo</th><th class="${th} pr-3 text-right hidden sm:table-cell">Abast.</th><th class="${th} pr-3 text-right hidden sm:table-cell">Litros</th><th class="${th} pr-3 text-right">Consumo</th><th class="${th} text-right">Gasto</th></tr></thead><tbody>${linhas.slice(0, 6).map(r => `<tr class="border-t border-gray-100"><td class="py-2.5 pr-3 max-w-[14rem] truncate">${esc(nm('veiculos', r.id))}</td><td class="py-2.5 pr-3 text-right num hidden sm:table-cell">${r.n}</td><td class="py-2.5 pr-3 text-right num whitespace-nowrap hidden sm:table-cell">${litro(r.l)}</td><td class="py-2.5 pr-3 text-right num whitespace-nowrap">${r.c ? n2(r.c) + ' km/L' : '<span class="text-gray-400">—</span>'}</td><td class="py-2.5 text-right num font-semibold whitespace-nowrap">R$ ${n2(r.v)}</td></tr>`).join('')}</tbody></table><p class="text-xs text-grafite mt-3">Consumo = (KM final − KM inicial) ÷ litros, para veículos com pelo menos 2 abastecimentos com odômetro no período.</p>` : `<p class="text-sm text-grafite">Nenhum abastecimento no período. Os registros feitos em Abastecimentos aparecem aqui com gasto e consumo por veículo.</p>`}</div>
+</div></section>`;
+  const hoje = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  return `<div class="flex flex-wrap justify-between items-end gap-4 mb-6"><div><p class="text-sm text-grafite">${hoje.charAt(0).toUpperCase() + hoje.slice(1)}</p><h2 class="font-display text-[34px] leading-tight font-semibold tracking-tight">Olá, ${esc((me.nome || '').split(' ')[0])}</h2><p class="text-grafite">Resumo da operação em tempo real.</p></div><button class="${G}" data-a="rel" data-c="dashboard">${svg('clip', 'w-4 h-4')} Relatório geral</button></div>
+<div class="grid grid-cols-2 lg:grid-cols-6 gap-2 mb-5 bg-white border border-linha rounded-xl p-3"><input type="date" data-f="de" aria-label="Data inicial" title="Data inicial" value="${f.de || ''}" class="${IC}"><input type="date" data-f="ate" aria-label="Data final" title="Data final" value="${f.ate || ''}" class="${IC}">${sel('m', 'motoristas', 'Motorista')}${sel('v', 'veiculos', 'Veículo')}${sel('r', 'rotas', 'Rota')}<select data-f="s" aria-label="Status" class="${IC}"><option value="">Status</option><option ${f.s === 'Em rota' ? 'selected' : ''}>Em rota</option><option ${f.s === 'Finalizada' ? 'selected' : ''}>Finalizada</option></select></div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-linha border border-linha rounded-xl overflow-hidden mb-5">${kpi('Expedições no período', ex.length, 'pkg')}${kpi('KM rodado no período', ex.reduce((a, e) => a + (e.kmRodado || 0), 0).toLocaleString('pt-BR'), 'gauge')}${kpi('Veículos em uso', cnt('Em uso'), 'truck')}${kpi('Veículos disponíveis', cnt('Disponível'), 'check')}${kpi('Veículos em manutenção', cnt('Manutenção'), 'wrench')}${kpi('Motoristas ativos', ms.filter(m => m.status === 'Ativo').length, 'user')}${kpi('Inspeções com itens críticos', crit, 'alert', crit ? 'text-red-600' : '')}${kpi('Manutenções realizadas', man.length, 'wrench')}</div>
+${cnhAl ? `<div class="mb-5 flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm"><span class="text-amber-600">${svg('alert', 'w-5 h-5')}</span>${cnhAl} motorista(s) com CNH vencida ou vencendo em até 30 dias.</div>` : ''}
+${fuel}
+<div class="grid md:grid-cols-2 gap-4">${box('Expedições por dia', bars(gd))}${box('Quilometragem por dia', bars(gk))}${box('Expedições por motorista', bars(gm))}${box('Utilização da frota (expedições por veículo)', bars(gv))}${box('Status dos veículos', bars({ 'Disponível': cnt('Disponível'), 'Em uso': cnt('Em uso'), 'Manutenção': cnt('Manutenção') }, { 'Disponível': 'bg-emerald-500', 'Em uso': 'bg-sky-500', 'Manutenção': 'bg-amber-500' }))}</div>`;
 };
 
 const det = (col, id) => {
@@ -434,7 +459,7 @@ const det = (col, id) => {
   const rows = E[col].f.filter(f => r[f[0]] !== undefined && r[f[0]] !== '').map(([k, l]) => {
     return `<div class="flex justify-between border-b py-1.5 text-sm"><span class="text-gray-600">${l}</span><span>${fmt(col, r, k, id)}</span></div>`;
   }).join('');
-  modal(`<h3 class="text-lg font-semibold mb-3">Detalhes</h3>${rows}<div class="flex justify-end gap-2 mt-4"><button class="${G}" data-a="edit" data-c="${col}" data-i="${id}">Editar</button><button class="bg-red-600 text-white rounded px-3 py-2 text-sm" data-a="del" data-c="${col}" data-i="${id}">Excluir</button><button class="${B}" data-a="x">Fechar</button></div>`);
+  modal(`<h3 class="font-display text-2xl font-semibold tracking-tight mb-4">Detalhes</h3>${rows}<div class="flex justify-end gap-2 mt-4"><button class="${G}" data-a="edit" data-c="${col}" data-i="${id}">Editar</button><button class="bg-red-600 hover:bg-red-700 text-white rounded-lg px-4 py-2.5 text-sm font-semibold" data-a="del" data-c="${col}" data-i="${id}">Excluir</button><button class="${B}" data-a="x">Fechar</button></div>`);
 };
 
 /* MÉDIA DE CONSUMO (abastecimentos) */
@@ -453,7 +478,7 @@ const consumoRel = () => {
 };
 const consumo = () => {
   CR = null;
-  modal(`<h3 class="text-lg font-semibold mb-1">Média de consumo</h3><p class="text-sm text-gray-500 mb-4">(KM final registrado − KM inicial registrado) ÷ total de litros abastecidos no período.</p><form id="cf" class="grid sm:grid-cols-2 gap-3"><label class="text-sm sm:col-span-2"><span class="block mb-1 text-gray-600">Veículo</span>${inp(['idVeiculo', 'Veículo', 'ref:veiculos'], '', { todos: 1 })}</label><label class="text-sm"><span class="block mb-1 text-gray-600">Data inicial</span><input type="date" name="de" class="${IC}"></label><label class="text-sm"><span class="block mb-1 text-gray-600">Data final</span><input type="date" name="ate" class="${IC}"></label><div id="cres" class="sm:col-span-2"></div><div class="sm:col-span-2 flex justify-end gap-2 pt-2"><button type="button" class="${G}" data-a="x">Fechar</button><button class="${B}">Calcular</button></div></form>`);
+  modal(`<h3 class="font-display text-2xl font-semibold tracking-tight mb-1">Média de consumo</h3><p class="text-sm text-gray-500 mb-4">(KM final registrado − KM inicial registrado) ÷ total de litros abastecidos no período.</p><form id="cf" class="grid sm:grid-cols-2 gap-3"><label class="text-sm sm:col-span-2"><span class="block mb-1.5 font-medium text-grafite">Veículo</span>${inp(['idVeiculo', 'Veículo', 'ref:veiculos'], '', { todos: 1 })}</label><label class="text-sm"><span class="block mb-1.5 font-medium text-grafite">Data inicial</span><input type="date" name="de" class="${IC}"></label><label class="text-sm"><span class="block mb-1.5 font-medium text-grafite">Data final</span><input type="date" name="ate" class="${IC}"></label><div id="cres" class="sm:col-span-2"></div><div class="sm:col-span-2 flex justify-end gap-2 pt-2"><button type="button" class="${G}" data-a="x">Fechar</button><button class="${B}">Calcular</button></div></form>`);
   $('#cf').onsubmit = e => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
@@ -485,14 +510,14 @@ const relForm = col => {
   
   let extraFilters = '';
   if (col === 'expedicoes') {
-    extraFilters = `<label class="text-sm"><span class="block mb-1 text-gray-600">Motorista</span>${inp(['idMotorista', 'Motorista', 'ref:motoristas'], '', { todos: 1 })}</label><label class="text-sm"><span class="block mb-1 text-gray-600">Rota</span>${inp(['idRota', 'Rota', 'ref:rotas'], '', { todos: 1 })}</label>`;
+    extraFilters = `<label class="text-sm"><span class="block mb-1.5 font-medium text-grafite">Motorista</span>${inp(['idMotorista', 'Motorista', 'ref:motoristas'], '', { todos: 1 })}</label><label class="text-sm"><span class="block mb-1.5 font-medium text-grafite">Rota</span>${inp(['idRota', 'Rota', 'ref:rotas'], '', { todos: 1 })}</label>`;
   } else if (col === 'manutencoes') {
-    extraFilters = `<label class="text-sm"><span class="block mb-1 text-gray-600">Empresa</span><input name="empresa" class="${IC}"></label>`;
+    extraFilters = `<label class="text-sm"><span class="block mb-1.5 font-medium text-grafite">Empresa</span><input name="empresa" class="${IC}"></label>`;
   } else if (col === 'abastecimentos') {
-    extraFilters = `<label class="text-sm"><span class="block mb-1 text-gray-600">Veículo (Carro)</span>${inp(['idVeiculo', 'Veículo', 'ref:veiculos'], '', { todos: 1 })}</label><label class="text-sm"><span class="block mb-1 text-gray-600">Combustível</span>${inp(['combustivel', 'Combustível', 'sel', COMBUSTIVEIS], '')}</label>`;
+    extraFilters = `<label class="text-sm"><span class="block mb-1.5 font-medium text-grafite">Veículo (Carro)</span>${inp(['idVeiculo', 'Veículo', 'ref:veiculos'], '', { todos: 1 })}</label><label class="text-sm"><span class="block mb-1.5 font-medium text-grafite">Combustível</span>${inp(['combustivel', 'Combustível', 'sel', COMBUSTIVEIS], '')}</label>`;
   }
   
-  modal(`<h3 class="text-lg font-semibold mb-4">Gerar relatório de ${E[col].t}</h3><form id="rf" class="grid sm:grid-cols-2 gap-3"><label class="text-sm"><span class="block mb-1 text-gray-600">Data inicial</span><input type="date" name="de" class="${IC}"></label><label class="text-sm"><span class="block mb-1 text-gray-600">Data final</span><input type="date" name="ate" class="${IC}"></label>${['expedicoes','manutencoes','inspecoes'].includes(col) ? `<label class="text-sm"><span class="block mb-1 text-gray-600">Veículo</span>${inp(['idVeiculo', 'Veículo', 'ref:veiculos'], '', { todos: 1 })}</label>` : ''}${extraFilters}<div class="sm:col-span-2 flex justify-end gap-2 pt-2"><button type="button" class="${G}" data-a="x">Cancelar</button><button class="${B}">Gerar relatório</button></div></form>`);
+  modal(`<h3 class="font-display text-2xl font-semibold tracking-tight mb-5">Gerar relatório de ${E[col].t}</h3><form id="rf" class="grid sm:grid-cols-2 gap-3"><label class="text-sm"><span class="block mb-1.5 font-medium text-grafite">Data inicial</span><input type="date" name="de" class="${IC}"></label><label class="text-sm"><span class="block mb-1.5 font-medium text-grafite">Data final</span><input type="date" name="ate" class="${IC}"></label>${['expedicoes','manutencoes','inspecoes'].includes(col) ? `<label class="text-sm"><span class="block mb-1.5 font-medium text-grafite">Veículo</span>${inp(['idVeiculo', 'Veículo', 'ref:veiculos'], '', { todos: 1 })}</label>` : ''}${extraFilters}<div class="sm:col-span-2 flex justify-end gap-2 pt-2"><button type="button" class="${G}" data-a="x">Cancelar</button><button class="${B}">Gerar relatório</button></div></form>`);
   $('#rf').onsubmit = e => {
     e.preventDefault();
     relatorio(col, Object.fromEntries(new FormData(e.target)));
@@ -565,7 +590,7 @@ const relShow = (col, title, sub, kv, h, rowsData, csvTop = null) => {
     <div class="flex justify-between items-start border-b pb-3 mb-4">
       <div>
         <div class="flex items-center gap-2 mb-1">
-          <span class="text-brand">${svg('logo', 'w-8 h-6')}</span>
+          ${logo('w-8 h-8')}
           <span class="font-bold text-gray-800">Frotas & Expedições</span>
         </div>
         <h1 class="text-2xl font-bold">${title}</h1>
@@ -574,7 +599,7 @@ const relShow = (col, title, sub, kv, h, rowsData, csvTop = null) => {
       <div class="text-sm text-gray-500 text-right">Gerado em<br>${new Date().toLocaleString('pt-BR')}</div>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">${kv.map(([l, v]) => `<div class="border rounded-xl p-3"><div class="text-xs text-gray-500">${l}</div><div class="text-xl font-bold">${v}</div></div>`).join('')}</div>
-    <div class="overflow-x-auto"><table class="w-full text-sm border"><thead class="bg-gray-50 text-left text-xs text-gray-500 uppercase"><tr>${h.map(x => `<th class="px-3 py-2 border-b">${x}</th>`).join('')}</tr></thead><tbody>${rowsData.length ? rowsData.map(r => `<tr class="border-t">${r.map(c => `<td class="px-3 py-2 border-b">${c}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${h.length}" class="p-6 text-center text-gray-400">Nenhum registro encontrado.</td></tr>`}</tbody></table></div>
+    <div class="overflow-x-auto"><table class="w-full text-sm border"><thead class="bg-gray-50 text-left text-xs text-grafite"><tr>${h.map(x => `<th class="px-3 py-2 border-b">${x}</th>`).join('')}</tr></thead><tbody>${rowsData.length ? rowsData.map(r => `<tr class="border-t">${r.map(c => `<td class="px-3 py-2 border-b">${c}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${h.length}" class="p-6 text-center text-gray-400">Nenhum registro encontrado.</td></tr>`}</tbody></table></div>
   </div>`;
   modal();
   $('#rel').classList.remove('hidden');
@@ -632,7 +657,7 @@ document.addEventListener('click', e => {
   }
   if (a === 'verfoto') {
     const m = D.manutencoes[i];
-    modal(`<h3 class="text-lg font-semibold mb-3">Comprovante de Nota Fiscal</h3><div class="mb-4 overflow-auto max-h-[70vh] flex justify-center">${m.fotoNota ? `<img src="${m.fotoNota}" class="max-w-full rounded shadow">` : '<p class="text-gray-400">Sem imagem anexada.</p>'}</div><div class="flex justify-end"><button class="${B}" data-a="x">Fechar</button></div>`);
+    modal(`<h3 class="font-display text-2xl font-semibold tracking-tight mb-4">Comprovante de Nota Fiscal</h3><div class="mb-4 overflow-auto max-h-[70vh] flex justify-center">${m.fotoNota ? `<img src="${m.fotoNota}" class="max-w-full rounded shadow">` : '<p class="text-gray-400">Sem imagem anexada.</p>'}</div><div class="flex justify-end"><button class="${B}" data-a="x">Fechar</button></div>`);
     return;
   }
   if (a === 'del') {
@@ -684,41 +709,29 @@ const render = () => {
   $('#main').innerHTML = view === 'Dashboard' ? dash() : lista(col);
 };
 
-const navHtml = () => MENU.map(([l, , i]) => `<a href="#" data-a="nav" data-i="${l}" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${l === view ? 'bg-brand text-white shadow-lg shadow-orange-200' : 'text-gray-600 hover:bg-gray-100'}">${svg(i)}${l}</a>`).join('');
+const navHtml = () => MENU.map(([l, , i]) => `<a href="#" data-a="nav" data-i="${l}" ${l === view ? 'aria-current="page"' : ''} class="relative flex items-center gap-3 pl-5 pr-3 py-2.5 rounded-lg text-[15px] font-medium transition-colors ${l === view ? 'bg-white/[0.07] text-white' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'}">${l === view ? '<span class="absolute left-0 top-2 bottom-2 w-[3px] rounded-r bg-brand"></span>' : ''}<span class="${l === view ? 'text-brand' : ''}">${svg(i, 'w-[18px] h-[18px]')}</span>${l}</a>`).join('');
 
 const shell = () => {
   $('#app').innerHTML = `<div class="md:flex min-h-screen">
-    <div class="md:hidden bg-white border-b p-3 flex justify-between items-center">
-      <span class="flex items-center gap-2 font-bold">
-        <span class="text-brand">${svg('logo', 'w-7 h-5')}</span>
-        <div>
-          <div class="text-sm leading-none">Frotas & Expedições</div>
-          <div class="text-[10px] text-gray-500 font-normal">gestão operacional</div>
-        </div>
-      </span>
-      <button data-a="menu" class="p-2">${svg('menu')}</button>
+    <div class="md:hidden bg-ink text-white px-4 py-3 flex justify-between items-center sticky top-0 z-30">
+      ${marca(1)}
+      <button data-a="menu" class="p-2 rounded-lg hover:bg-white/10" aria-label="Abrir menu">${svg('menu')}</button>
     </div>
-    <aside id="side" class="hidden md:flex flex-col w-full md:w-64 shrink-0 bg-white border-r border-gray-100 md:sticky md:top-0 md:h-screen">
-      <div class="hidden md:flex items-center gap-3 p-5 border-b border-gray-100">
-        <span class="text-brand">${svg('logo', 'w-10 h-8')}</span>
-        <div class="leading-tight">
-          <div class="font-bold text-gray-900 leading-none mb-0.5">Frotas & Expedições</div>
-          <div class="text-xs text-gray-500 font-medium tracking-wide uppercase">gestão operacional</div>
-        </div>
-      </div>
-      <nav id="nav" class="flex-1 p-3 space-y-1 overflow-y-auto">${navHtml()}</nav>
-      <div class="p-4 border-t border-gray-100 space-y-3">
-        <div class="flex items-center gap-3">
-          <span class="w-10 h-10 rounded-full bg-orange-100 text-brand flex items-center justify-center font-bold">D</span>
+    <aside id="side" class="hidden md:flex flex-col w-full md:w-[260px] shrink-0 bg-ink md:sticky md:top-0 md:h-screen">
+      <div class="hidden md:block px-5 pt-6 pb-5">${marca(1)}</div>
+      <nav id="nav" class="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">${navHtml()}</nav>
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="w-9 h-9 rounded-full bg-white/10 text-white flex items-center justify-center font-semibold">D</span>
           <div class="leading-tight min-w-0">
-            <div class="font-semibold truncate">Modo Demonstração</div>
-            <div class="text-xs text-gray-500">Coordenador</div>
+            <div class="font-medium text-white truncate">Modo demonstração</div>
+            <div class="text-[13px] text-gray-400">Dados fictícios, salvos só neste navegador</div>
           </div>
         </div>
-        <button data-a="resetdb" class="w-full text-xs text-gray-500 hover:text-brand underline text-center block">Restaurar Dados Iniciais</button>
+        <button data-a="resetdb" class="w-full rounded-lg border border-white/15 text-gray-200 px-4 py-2 text-sm font-medium hover:bg-white/5 transition-colors">Restaurar dados de exemplo</button>
       </div>
     </aside>
-    <main id="main" class="flex-1 p-4 md:p-8 min-w-0"></main>
+    <main id="main" class="flex-1 px-4 py-6 md:px-10 md:py-9 min-w-0 max-w-[1440px]"></main>
   </div>`;
   render();
 };
